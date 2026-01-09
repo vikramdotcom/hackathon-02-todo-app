@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(powershell:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\ndocs: add Phase I specification \\(CLI todo app\\)\n\nComplete SDD specification for Phase I: In-Memory Python Console Todo App.\n\nKey elements:\n- 4 prioritized user stories \\(P1: core CRUD, P2: filtering, P3: scheduling, P4: session tracking\\)\n- 27 functional requirements covering data model, operations, UX, session tracking, constraints\n- 7 measurable success criteria \\(user launch time, data model enforcement, operation independence, filtering, error handling, clean exit, timestamp preservation\\)\n- 8 edge cases documented\n- 9 assumptions \\(single-user, in-memory, Python 3.13+, terminal I/O, date flexibility, defaults, no external APIs, error re-prompting, backward compat\\)\n- 8 non-goals \\(persistence, web UI, AI, integrations deferred to later phases\\)\n- Complete acceptance testing strategy \\(unit, integration, manual\\)\n- Future phase compatibility notes \\(Phase II web API, Phase III AI, Phase IV/V cloud\\)\n\nSpecification Quality Checklist: PASS \\(all 18 criteria verified\\)\nData model: canonical and immutable across all 5 phases\nTechnology constraints: Python 3.13+, Standard Library only, stdin/stdout/stderr, single-threaded, in-memory\n\nReady for `/sp.plan` architecture design and `/sp.tasks` development task generation.\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(bash:*)",
+      "Bash(if:*)",
+      "Bash(then echo \"EXISTS\")",
+      "Bash(else echo \"NOT_FOUND\")",
+      "Bash(fi)",
+      "Bash(git rev-parse:*)",
+      "Bash(python:*)"
+    ]
+  }
+}

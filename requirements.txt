@@ -1,0 +1,2 @@
+# Phase I CLI Todo App - No third-party dependencies
+# Python 3.13+ Standard Library only
