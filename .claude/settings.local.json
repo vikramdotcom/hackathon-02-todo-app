@@ -46,7 +46,9 @@
       "Bash(psql --version)",
       "Bash(venv/Scripts/python.exe -m alembic upgrade:*)",
       "Bash(venv/Scripts/python.exe init_db.py)",
-      "Bash(venv/Scripts/python.exe -m pip install:*)"
+      "Bash(venv/Scripts/python.exe -m pip install:*)",
+      "Bash(echo \"✓ Repository: https://github.com/vikramdotcom/hackathon-02-todo-app.git\")",
+      "Bash(xargs rm -rf)"
     ]
   }
 }
