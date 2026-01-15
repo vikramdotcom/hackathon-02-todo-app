@@ -1,0 +1,23 @@
+# Hugging Face Spaces - Force Rebuild
+
+This file triggers a rebuild on Hugging Face Spaces.
+
+**Last Updated:** 2026-01-16 (SQLite migration fix)
+**Commit:** 016544e
+**Status:** Fixed - SQLite-compatible migrations
+
+## Changes in Latest Deployment
+- ✅ Removed PostgreSQL-specific operators (~*)
+- ✅ Removed ALTER TABLE ADD CONSTRAINT statements
+- ✅ All constraints now inline in CREATE TABLE
+- ✅ Email validation moved to Python layer
+- ✅ Automatic database recovery on startup
+
+## Deployment Notes
+If you see migration errors, the Space needs to:
+1. Pull latest code from GitHub
+2. Clear old database file
+3. Rebuild container
+4. Run fresh migrations
+
+See HUGGINGFACE_DEPLOYMENT.md for full instructions.
