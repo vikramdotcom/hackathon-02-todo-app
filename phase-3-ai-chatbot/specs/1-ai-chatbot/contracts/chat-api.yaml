@@ -1,0 +1,455 @@
+openapi: 3.0.3
+info:
+  title: AI-Powered Todo Chatbot API
+  description: |
+    REST API for conversational todo management. This API enables natural language
+    interaction with the Phase II Todo application through an AI-powered chatbot.
+
+    All endpoints require authentication via JWT token from Phase II.
+  version: 1.0.0
+  contact:
+    name: Todo App Team
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://api.todo-app.example.com/api/v1
+    description: Production server
+
+tags:
+  - name: chat
+    description: Chat conversation endpoints
+
+security:
+  - bearerAuth: []
+
+paths:
+  /chat/message:
+    post:
+      tags:
+        - chat
+      summary: Send a chat message
+      description: |
+        Send a user message to the chatbot and receive a streaming response.
+        The response is streamed using Server-Sent Events (SSE) format.
+
+        If this is the first message, omit session_id and a new session will be created.
+        For subsequent messages, include the session_id from the previous response.
+      operationId: sendChatMessage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatMessageRequest'
+            examples:
+              firstMessage:
+                summary: First message (no session)
+                value:
+                  message: "Show me all my high priority tasks"
+              followUpMessage:
+                summary: Follow-up message
+                value:
+                  session_id: "550e8400-e29b-41d4-a716-446655440000"
+                  message: "Mark the first one as complete"
+      responses:
+        '200':
+          description: Streaming response with chat message
+          headers:
+            X-Session-Id:
+              description: Session ID for this conversation (returned on first message)
+              schema:
+                type: string
+                format: uuid
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/ChatMessageStreamResponse'
+              examples:
+                streamingResponse:
+                  summary: Streaming response chunks
+                  value: |
+                    data: {"type":"token","content":"I've"}
+
+                    data: {"type":"token","content":" marked"}
+
+                    data: {"type":"token","content":" the"}
+
+                    data: {"type":"token","content":" task"}
+
+                    data: {"type":"done","message_id":"123e4567-e89b-12d3-a456-426614174000"}
+        '400':
+          description: Bad request (invalid message format)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized (invalid or missing JWT token)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session not found or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /chat/sessions/{session_id}:
+    get:
+      tags:
+        - chat
+      summary: Get conversation session
+      description: |
+        Retrieve the full conversation history for a session.
+        Useful for restoring conversation state after page refresh.
+      operationId: getSession
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          description: Session ID to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Session retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationSession'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session not found or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - chat
+      summary: Delete conversation session
+      description: |
+        End a conversation session and clear its history.
+        Useful for "start fresh" functionality.
+      operationId: deleteSession
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          description: Session ID to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Session deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Session deleted successfully"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /chat/sessions:
+    get:
+      tags:
+        - chat
+      summary: List user's active sessions
+      description: |
+        Get all active conversation sessions for the authenticated user.
+        Useful for multi-device support.
+      operationId: listSessions
+      responses:
+        '200':
+          description: Sessions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SessionSummary'
+                  total:
+                    type: integer
+                    example: 2
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from Phase II authentication
+
+  schemas:
+    ChatMessageRequest:
+      type: object
+      required:
+        - message
+      properties:
+        session_id:
+          type: string
+          format: uuid
+          description: Session ID (omit for first message)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        message:
+          type: string
+          minLength: 1
+          maxLength: 10000
+          description: User's message text
+          example: "Show me all my high priority tasks"
+
+    ChatMessageStreamResponse:
+      description: |
+        Server-Sent Events stream. Each event is a JSON object with a type field.
+
+        Event types:
+        - token: Incremental response token
+        - todo: Todo card to display
+        - done: Response complete
+        - error: Error occurred
+      oneOf:
+        - $ref: '#/components/schemas/TokenEvent'
+        - $ref: '#/components/schemas/TodoEvent'
+        - $ref: '#/components/schemas/DoneEvent'
+        - $ref: '#/components/schemas/ErrorEvent'
+
+    TokenEvent:
+      type: object
+      required:
+        - type
+        - content
+      properties:
+        type:
+          type: string
+          enum: [token]
+        content:
+          type: string
+          description: Incremental text token
+          example: " task"
+
+    TodoEvent:
+      type: object
+      required:
+        - type
+        - todo
+      properties:
+        type:
+          type: string
+          enum: [todo]
+        todo:
+          $ref: '#/components/schemas/TodoCard'
+
+    DoneEvent:
+      type: object
+      required:
+        - type
+        - message_id
+      properties:
+        type:
+          type: string
+          enum: [done]
+        message_id:
+          type: string
+          format: uuid
+          description: ID of the completed message
+
+    ErrorEvent:
+      type: object
+      required:
+        - type
+        - error
+      properties:
+        type:
+          type: string
+          enum: [error]
+        error:
+          type: string
+          description: Error message
+          example: "Failed to retrieve todos"
+
+    TodoCard:
+      type: object
+      description: Todo information for display in chat
+      required:
+        - id
+        - title
+        - completed
+        - priority
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Complete project documentation"
+        description:
+          type: string
+          example: "Write comprehensive docs for Phase II"
+        completed:
+          type: boolean
+          example: false
+        priority:
+          type: string
+          enum: [low, medium, high]
+          example: "high"
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["work", "documentation"]
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2026-01-15T17:00:00Z"
+
+    ConversationSession:
+      type: object
+      required:
+        - session_id
+        - user_id
+        - created_at
+        - last_activity_at
+        - message_count
+        - messages
+      properties:
+        session_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        user_id:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-01-22T10:00:00Z"
+        last_activity_at:
+          type: string
+          format: date-time
+          example: "2026-01-22T10:15:00Z"
+        message_count:
+          type: integer
+          example: 8
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+          maxItems: 20
+
+    ChatMessage:
+      type: object
+      required:
+        - message_id
+        - role
+        - content
+        - timestamp
+      properties:
+        message_id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        role:
+          type: string
+          enum: [user, assistant]
+          example: "user"
+        content:
+          type: string
+          example: "Show me all my high priority tasks"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-01-22T10:00:00Z"
+        metadata:
+          $ref: '#/components/schemas/MessageMetadata'
+
+    MessageMetadata:
+      type: object
+      properties:
+        message_type:
+          type: string
+          enum: [text, todo_display, confirmation_request, error]
+          example: "text"
+        referenced_todos:
+          type: array
+          items:
+            type: integer
+          example: [1, 2, 3]
+        tokens_used:
+          type: integer
+          example: 150
+
+    SessionSummary:
+      type: object
+      required:
+        - session_id
+        - created_at
+        - last_activity_at
+        - message_count
+      properties:
+        session_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-01-22T10:00:00Z"
+        last_activity_at:
+          type: string
+          format: date-time
+          example: "2026-01-22T10:15:00Z"
+        message_count:
+          type: integer
+          example: 8
+        last_message_preview:
+          type: string
+          example: "Show me all my high priority tasks"
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          example: "Session not found or expired"

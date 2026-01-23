@@ -51,7 +51,12 @@
       "Bash(xargs rm -rf)",
       "Bash(git commit:*)",
       "Bash(grep:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(Get-Content:*)",
+      "Bash(find ./phase-1-cli-app/src -type d -name \"__pycache__\" -exec rm -rf {} +)",
+      "Bash(find:*)",
+      "Bash(git check-ignore -v ./phase-2-web-app/backend/todo_app.db)",
+      "Skill(sp.plan)"
     ]
   }
 }

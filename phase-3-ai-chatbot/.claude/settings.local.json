@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch --all --prune)",
+      "Bash(if [ -d \"specs\" ])",
+      "Bash(then ls -1 specs)",
+      "Bash(else echo \"No specs directory found\")",
+      "Bash(fi)",
+      "Bash(powershell.exe:*)",
+      "Bash(if:*)",
+      "Bash(then find .specify -type f -name \"*.ps1\" -o -name \"*.sh\")",
+      "Bash(else echo \"No .specify directory\")",
+      "Bash(git checkout -b 1-ai-chatbot)",
+      "Bash(then powershell.exe -ExecutionPolicy Bypass -File \".specify/scripts/powershell/setup-plan.ps1\" -Json)",
+      "Bash(else echo \"Script not found - will create plan structure manually\")",
+      "Bash(then echo \"Constitution found\")",
+      "Bash(else echo \"No constitution file\")"
+    ]
+  }
+}
