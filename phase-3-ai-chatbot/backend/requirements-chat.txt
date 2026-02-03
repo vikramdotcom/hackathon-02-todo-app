@@ -1,0 +1,14 @@
+# Chat Feature Dependencies
+# Install with: pip install -r requirements-chat.txt
+
+# OpenAI SDK for LLM integration
+openai==1.12.0
+
+# HTTP client for Phase II API calls
+httpx==0.26.0
+
+# Natural language date parsing
+dateparser==1.2.0
+
+# Environment variable management
+python-dotenv==1.0.0

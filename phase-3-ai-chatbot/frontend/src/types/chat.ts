@@ -1,8 +1,8 @@
 /**
- * TypeScript types for chat functionality
+ * TypeScript interfaces for chat feature
  */
 
-export interface ChatMessage {
+export interface Message {
   message_id: string;
   role: 'user' | 'assistant';
   content: string;
@@ -13,7 +13,15 @@ export interface ChatMessage {
 export interface MessageMetadata {
   message_type?: 'text' | 'todo_display' | 'confirmation_request' | 'error';
   referenced_todos?: number[];
+  function_call?: FunctionCall;
   tokens_used?: number;
+}
+
+export interface FunctionCall {
+  function_name: string;
+  arguments: Record<string, any>;
+  result?: Record<string, any>;
+  error?: string;
 }
 
 export interface ConversationSession {
@@ -22,7 +30,30 @@ export interface ConversationSession {
   created_at: string;
   last_activity_at: string;
   message_count: number;
-  messages: ChatMessage[];
+  messages: Message[];
+  context: ConversationContext;
+}
+
+export interface ConversationContext {
+  referenced_todos: Record<number, TodoReference>;
+  last_query_results?: number[];
+  pending_confirmation?: PendingConfirmation;
+  user_preferences?: Record<string, any>;
+}
+
+export interface TodoReference {
+  todo_id: number;
+  title: string;
+  completed: boolean;
+  last_mentioned_at: string;
+}
+
+export interface PendingConfirmation {
+  operation: 'delete' | 'bulk_delete' | 'bulk_update';
+  target_todo_ids: number[];
+  created_at: string;
+  expires_at: string;
+  operation_details?: Record<string, any>;
 }
 
 export interface ChatMessageRequest {
@@ -30,28 +61,23 @@ export interface ChatMessageRequest {
   message: string;
 }
 
-export interface TodoCard {
-  id: number;
-  title: string;
-  description?: string;
-  completed: boolean;
-  priority: 'low' | 'medium' | 'high';
-  tags?: string[];
-  due_date?: string;
-}
-
-export interface StreamEvent {
-  type: 'token' | 'todo' | 'done' | 'error';
+export interface ChatMessageResponse {
+  type: 'token' | 'function_call' | 'done' | 'error';
   content?: string;
-  todo?: TodoCard;
+  function_name?: string;
+  arguments?: Record<string, any>;
   message_id?: string;
   error?: string;
 }
 
-export interface SessionSummary {
-  session_id: string;
+export interface Todo {
+  id: number;
+  title: string;
+  description?: string;
+  completed: boolean;
+  priority?: 'low' | 'medium' | 'high';
+  due_date?: string;
+  tags?: string[];
   created_at: string;
-  last_activity_at: string;
-  message_count: number;
-  last_message_preview?: string;
+  updated_at: string;
 }
