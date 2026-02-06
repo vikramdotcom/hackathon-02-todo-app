@@ -265,9 +265,9 @@ export default function ChatInterface({
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b px-4 py-3 flex items-center justify-between">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
             <svg
@@ -285,8 +285,8 @@ export default function ChatInterface({
             </svg>
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-gray-900">Todo Assistant</h1>
-            <p className="text-sm text-gray-500">
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Todo Assistant</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {sessionId ? `Session active` : 'Start a conversation'}
             </p>
           </div>
@@ -297,7 +297,7 @@ export default function ChatInterface({
           {sessionId && (
             <button
               onClick={handleClearChat}
-              className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               title="Start new conversation"
             >
               <svg
@@ -320,8 +320,8 @@ export default function ChatInterface({
 
       {/* Error banner */}
       {error && (
-        <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-red-800">
+        <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800 px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-red-800 dark:text-red-400">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -339,7 +339,7 @@ export default function ChatInterface({
           </div>
           <button
             onClick={() => setError(null)}
-            className="text-red-600 hover:text-red-800"
+            className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
           >
             <svg
               className="w-5 h-5"

@@ -18,11 +18,11 @@ class ConversationManager:
         self._cleanup_task: Optional[asyncio.Task] = None
         logger.info(f'ConversationManager initialized (timeout: {session_timeout_minutes}min)')
 
-    def create_session(self, user_id: int) -> ConversationSession:
+    def create_session(self, user_id: int) -> str:
         session = ConversationSession.create(user_id)
         self.sessions[session.session_id] = session
         logger.info(f'Created session {session.session_id} for user {user_id}')
-        return session
+        return session.session_id
 
     def get_session(self, session_id: str) -> Optional[ConversationSession]:
         session = self.sessions.get(session_id)
@@ -54,6 +54,21 @@ class ConversationManager:
         for key, value in context_updates.items():
             if hasattr(session.context, key):
                 setattr(session.context, key, value)
+        return True
+
+    def update_session(self, session_id: str, session: ConversationSession) -> bool:
+        """Update an existing session in storage.
+
+        Args:
+            session_id: Session identifier
+            session: Updated session object
+
+        Returns:
+            True if session was updated, False if not found
+        """
+        if session_id not in self.sessions:
+            return False
+        self.sessions[session_id] = session
         return True
 
     def clear_expired_confirmations(self) -> int:

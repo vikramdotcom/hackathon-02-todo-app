@@ -26,8 +26,8 @@ from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
-# Initialize router
-router = APIRouter(prefix="/chat", tags=["chat"])
+# Initialize router (no prefix here, it's added in main.py)
+router = APIRouter(tags=["chat"])
 
 # Initialize services
 phase2_client = Phase2Client(

@@ -40,13 +40,13 @@ export default function TodoItem({ todo, onUpdate }: TodoItemProps) {
   }
 
   const priorityColors = {
-    low: 'bg-blue-100 text-blue-700',
-    medium: 'bg-yellow-100 text-yellow-700',
-    high: 'bg-red-100 text-red-700',
+    low: 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400',
+    medium: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400',
+    high: 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400',
   }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
       <div className="flex items-start gap-3">
         <input
           type="checkbox"
@@ -57,12 +57,12 @@ export default function TodoItem({ todo, onUpdate }: TodoItemProps) {
         />
 
         <div className="flex-1 min-w-0">
-          <h3 className={`text-lg font-medium ${todo.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+          <h3 className={`text-lg font-medium ${todo.completed ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-white'}`}>
             {todo.title}
           </h3>
 
           {todo.description && (
-            <p className="text-sm text-gray-600 mt-1">{todo.description}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{todo.description}</p>
           )}
 
           <div className="flex flex-wrap items-center gap-2 mt-2">
@@ -71,13 +71,13 @@ export default function TodoItem({ todo, onUpdate }: TodoItemProps) {
             </span>
 
             {todo.tags.map((tag) => (
-              <span key={tag} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs">
+              <span key={tag} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-xs">
                 {tag}
               </span>
             ))}
 
             {todo.due_date && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 Due: {new Date(todo.due_date).toLocaleDateString()}
               </span>
             )}
@@ -87,7 +87,7 @@ export default function TodoItem({ todo, onUpdate }: TodoItemProps) {
         <button
           onClick={deleteTodo}
           disabled={loading}
-          className="text-red-600 hover:text-red-800 p-2 rounded-md hover:bg-red-50 disabled:opacity-50"
+          className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
           title="Delete todo"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

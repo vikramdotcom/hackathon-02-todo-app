@@ -30,9 +30,9 @@ export default function MessageList({ messages, todosMap, isLoading }: MessageLi
       {/* Empty state */}
       {messages.length === 0 && !isLoading && (
         <div className="flex flex-col items-center justify-center h-full text-center">
-          <div className="w-16 h-16 mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+          <div className="w-16 h-16 mb-4 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-blue-600"
+              className="w-8 h-8 text-blue-600 dark:text-blue-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -45,13 +45,13 @@ export default function MessageList({ messages, todosMap, isLoading }: MessageLi
               />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             Start a conversation
           </h3>
-          <p className="text-gray-600 max-w-md">
+          <p className="text-gray-600 dark:text-gray-300 max-w-md">
             Ask me to help you manage your todos. Try saying:
           </p>
-          <ul className="mt-4 text-sm text-gray-500 space-y-2">
+          <ul className="mt-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
             <li>"Add a task to buy groceries tomorrow"</li>
             <li>"Show me all my high priority tasks"</li>
             <li>"What do I need to do today?"</li>
@@ -74,13 +74,13 @@ export default function MessageList({ messages, todosMap, isLoading }: MessageLi
       {/* Typing indicator */}
       {isLoading && (
         <div className="flex justify-start mb-4">
-          <div className="flex items-center space-x-2 bg-gray-100 rounded-lg px-4 py-3 rounded-bl-none">
+          <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3 rounded-bl-none">
             <div className="flex space-x-1">
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
             </div>
-            <span className="text-sm text-gray-500">AI is thinking...</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">AI is thinking...</span>
           </div>
         </div>
       )}

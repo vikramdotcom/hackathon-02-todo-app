@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import '../styles/globals.css'
+import FloatingChatButton from '@/components/layout/FloatingChatButton'
 
 export const metadata: Metadata = {
   title: 'Todo App - Phase II',
@@ -13,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <FloatingChatButton />
+      </body>
     </html>
   )
 }

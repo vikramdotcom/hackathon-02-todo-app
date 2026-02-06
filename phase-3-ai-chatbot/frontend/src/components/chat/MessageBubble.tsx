@@ -37,7 +37,7 @@ export default function MessageBubble({ message, todos }: MessageBubbleProps) {
           className={`rounded-lg px-4 py-3 ${
             isUser
               ? 'bg-blue-600 text-white rounded-br-none'
-              : 'bg-gray-100 text-gray-900 rounded-bl-none'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none'
           }`}
         >
           {/* Message content */}
@@ -48,7 +48,7 @@ export default function MessageBubble({ message, todos }: MessageBubbleProps) {
           {/* Timestamp */}
           <div
             className={`text-xs mt-1 ${
-              isUser ? 'text-blue-100' : 'text-gray-500'
+              isUser ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
             }`}
           >
             {formatTimestamp(message.timestamp)}
@@ -66,7 +66,7 @@ export default function MessageBubble({ message, todos }: MessageBubbleProps) {
 
         {/* Message metadata indicators */}
         {message.metadata?.message_type === 'confirmation_request' && (
-          <div className="mt-2 text-xs text-orange-600 flex items-center gap-1">
+          <div className="mt-2 text-xs text-orange-600 dark:text-orange-400 flex items-center gap-1">
             <svg
               className="w-4 h-4"
               fill="none"
@@ -85,7 +85,7 @@ export default function MessageBubble({ message, todos }: MessageBubbleProps) {
         )}
 
         {message.metadata?.message_type === 'error' && (
-          <div className="mt-2 text-xs text-red-600 flex items-center gap-1">
+          <div className="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
             <svg
               className="w-4 h-4"
               fill="none"
@@ -114,7 +114,7 @@ export default function MessageBubble({ message, todos }: MessageBubbleProps) {
           className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
             isUser
               ? 'bg-blue-600 text-white'
-              : 'bg-gray-300 text-gray-700'
+              : 'bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200'
           }`}
         >
           {isUser ? 'U' : 'AI'}

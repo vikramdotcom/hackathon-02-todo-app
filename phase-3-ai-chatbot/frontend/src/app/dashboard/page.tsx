@@ -48,13 +48,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Todos</h1>
-          <p className="text-gray-600 mt-1">Manage your tasks and stay organized</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Todos</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Manage your tasks and stay organized</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="lg:col-span-2">
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-4">
               <div className="flex flex-col sm:flex-row gap-4">
                 <form onSubmit={handleSearch} className="flex-1 flex gap-2">
                   <input
@@ -71,11 +71,11 @@ export default function DashboardPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search todos..."
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+                    className="px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600"
                   >
                     Search
                   </button>
@@ -87,7 +87,7 @@ export default function DashboardPage() {
                     className={`px-4 py-2 rounded-md text-sm font-medium ${
                       filter === 'all'
                         ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     All
@@ -97,7 +97,7 @@ export default function DashboardPage() {
                     className={`px-4 py-2 rounded-md text-sm font-medium ${
                       filter === 'pending'
                         ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     Pending
@@ -107,7 +107,7 @@ export default function DashboardPage() {
                     className={`px-4 py-2 rounded-md text-sm font-medium ${
                       filter === 'completed'
                         ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     Completed
@@ -119,11 +119,11 @@ export default function DashboardPage() {
             {loading ? (
               <div className="text-center py-12">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                <p className="text-gray-600 mt-2">Loading todos...</p>
+                <p className="text-gray-600 dark:text-gray-300 mt-2">Loading todos...</p>
               </div>
             ) : todos.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
-                <p className="text-gray-600">No todos found. Create your first todo to get started!</p>
+              <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <p className="text-gray-600 dark:text-gray-300">No todos found. Create your first todo to get started!</p>
               </div>
             ) : (
               <div className="space-y-3">

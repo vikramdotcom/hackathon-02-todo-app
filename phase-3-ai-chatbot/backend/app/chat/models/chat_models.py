@@ -129,6 +129,21 @@ class ConversationSession:
         """Get the most recent messages (sliding window)."""
         return self.messages[-limit:] if len(self.messages) > limit else self.messages
 
+    def get_message_history(self, limit: int = 20) -> List[Dict]:
+        """Get message history formatted for LLM API.
+
+        Returns messages in the format expected by OpenAI API:
+        [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+        """
+        recent_messages = self.get_recent_messages(limit)
+        return [
+            {
+                "role": msg.role,
+                "content": msg.content
+            }
+            for msg in recent_messages
+        ]
+
     def is_expired(self, timeout_minutes: int = 30) -> bool:
         """Check if session has expired due to inactivity."""
         from datetime import timedelta

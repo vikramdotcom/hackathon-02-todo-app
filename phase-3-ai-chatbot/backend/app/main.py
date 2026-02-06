@@ -73,7 +73,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["auth"])
 app.include_router(todos.router, prefix=f"{settings.API_V1_PREFIX}/todos", tags=["todos"])
 app.include_router(users.router, prefix=f"{settings.API_V1_PREFIX}/users", tags=["users"])
-app.include_router(chat_routes.router, prefix=settings.API_V1_PREFIX, tags=["chat"])
+app.include_router(chat_routes.router, prefix=f"{settings.API_V1_PREFIX}/chat", tags=["chat"])
 
 
 @app.get("/")

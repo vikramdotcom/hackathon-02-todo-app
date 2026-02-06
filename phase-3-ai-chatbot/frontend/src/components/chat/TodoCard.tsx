@@ -11,9 +11,9 @@ interface TodoCardProps {
 
 export default function TodoCard({ todo }: TodoCardProps) {
   const priorityColors = {
-    low: 'bg-blue-100 text-blue-800 border-blue-200',
-    medium: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    high: 'bg-red-100 text-red-800 border-red-200',
+    low: 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400 border-blue-200 dark:border-blue-800',
+    medium: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800',
+    high: 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400 border-red-200 dark:border-red-800',
   };
 
   const priorityColor = priorityColors[todo.priority] || priorityColors.medium;
@@ -30,13 +30,13 @@ export default function TodoCard({ todo }: TodoCardProps) {
   };
 
   return (
-    <div className="border rounded-lg p-4 my-2 bg-white shadow-sm hover:shadow-md transition-shadow">
+    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 my-2 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow">
       {/* Header with title and status */}
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
           <h3
             className={`font-semibold text-lg ${
-              todo.completed ? 'line-through text-gray-500' : 'text-gray-900'
+              todo.completed ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-white'
             }`}
           >
             {todo.title}
@@ -51,7 +51,7 @@ export default function TodoCard({ todo }: TodoCardProps) {
           </span>
           {/* Completion status */}
           {todo.completed && (
-            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-800">
               ✓ Done
             </span>
           )}
@@ -60,11 +60,11 @@ export default function TodoCard({ todo }: TodoCardProps) {
 
       {/* Description */}
       {todo.description && (
-        <p className="text-gray-600 text-sm mb-3">{todo.description}</p>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{todo.description}</p>
       )}
 
       {/* Footer with metadata */}
-      <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+      <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
         {/* Due date */}
         {todo.due_date && (
           <div className="flex items-center gap-1">
@@ -91,7 +91,7 @@ export default function TodoCard({ todo }: TodoCardProps) {
             {todo.tags.map((tag, index) => (
               <span
                 key={index}
-                className="px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border border-gray-200"
+                className="px-2 py-0.5 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600"
               >
                 #{tag}
               </span>
@@ -100,7 +100,7 @@ export default function TodoCard({ todo }: TodoCardProps) {
         )}
 
         {/* Todo ID (for reference) */}
-        <span className="text-xs text-gray-400">ID: {todo.id}</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500">ID: {todo.id}</span>
       </div>
     </div>
   );

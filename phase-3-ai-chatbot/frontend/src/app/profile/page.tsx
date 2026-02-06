@@ -58,7 +58,7 @@ export default function ProfilePage() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header />
         <div className="flex items-center justify-center h-96">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
@@ -68,34 +68,34 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-          <p className="text-gray-600 mt-1">Your account information and statistics</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Your account information and statistics</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Profile Information */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Account Information</h2>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Account Information</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Username</label>
-                <p className="mt-1 text-lg text-gray-900">{user.username}</p>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
+                <p className="mt-1 text-lg text-gray-900 dark:text-white">{user.username}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
-                <p className="mt-1 text-lg text-gray-900">{user.email}</p>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <p className="mt-1 text-lg text-gray-900 dark:text-white">{user.email}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Member Since</label>
-                <p className="mt-1 text-lg text-gray-900">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Member Since</label>
+                <p className="mt-1 text-lg text-gray-900 dark:text-white">
                   {new Date(user.created_at).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -108,48 +108,48 @@ export default function ProfilePage() {
 
           {/* Statistics */}
           {stats && (
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Todo Statistics</h2>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Todo Statistics</h2>
 
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Total Todos</span>
-                  <span className="text-2xl font-bold text-blue-600">{stats.total_todos}</span>
+                <div className="flex justify-between items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Todos</span>
+                  <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.total_todos}</span>
                 </div>
 
-                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Completed</span>
-                  <span className="text-2xl font-bold text-green-600">{stats.completed_todos}</span>
+                <div className="flex justify-between items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Completed</span>
+                  <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.completed_todos}</span>
                 </div>
 
-                <div className="flex justify-between items-center p-4 bg-yellow-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Pending</span>
-                  <span className="text-2xl font-bold text-yellow-600">{stats.pending_todos}</span>
+                <div className="flex justify-between items-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Pending</span>
+                  <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{stats.pending_todos}</span>
                 </div>
 
-                <div className="flex justify-between items-center p-4 bg-purple-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Completion Rate</span>
-                  <span className="text-2xl font-bold text-purple-600">{stats.completion_rate}%</span>
+                <div className="flex justify-between items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Completion Rate</span>
+                  <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.completion_rate}%</span>
                 </div>
 
-                <div className="pt-4 border-t border-gray-200">
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Priority Distribution</h3>
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Priority Distribution</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">High Priority</span>
-                      <span className="text-sm font-semibold text-red-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">High Priority</span>
+                      <span className="text-sm font-semibold text-red-600 dark:text-red-400">
                         {stats.priority_distribution.high}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Medium Priority</span>
-                      <span className="text-sm font-semibold text-yellow-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Medium Priority</span>
+                      <span className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">
                         {stats.priority_distribution.medium}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Low Priority</span>
-                      <span className="text-sm font-semibold text-blue-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Low Priority</span>
+                      <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
                         {stats.priority_distribution.low}
                       </span>
                     </div>

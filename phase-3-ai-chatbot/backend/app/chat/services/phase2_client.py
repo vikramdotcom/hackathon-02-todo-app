@@ -44,7 +44,8 @@ class Phase2Client:
         completed: Optional[bool] = None,
         priority: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        search: Optional[str] = None
+        search: Optional[str] = None,
+        limit: Optional[int] = None
     ) -> List[Dict[str, Any]]:
         """Get todos with optional filters."""
         try:
@@ -57,6 +58,8 @@ class Phase2Client:
                 params["tags"] = ",".join(tags)
             if search:
                 params["search"] = search
+            if limit:
+                params["limit"] = limit
 
             response = await self.client.get(
                 f"{self.base_url}/todos",
