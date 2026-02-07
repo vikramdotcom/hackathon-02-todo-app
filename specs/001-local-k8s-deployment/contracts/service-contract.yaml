@@ -1,0 +1,128 @@
+# Service Resource Contract
+
+**Resource Type**: Service (v1)
+**Purpose**: Exposes application pods via stable network endpoint
+
+## Schema
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: <service-name>
+  namespace: <namespace>
+  labels:
+    app: <service-name>
+spec:
+  type: <service-type>
+  selector:
+    app: <service-name>
+  ports:
+  - name: <port-name>
+    protocol: TCP
+    port: <service-port>
+    targetPort: <container-port>
+```
+
+## Field Constraints
+
+| Field | Type | Required | Constraints |
+|-------|------|----------|-------------|
+| `metadata.name` | string | Yes | Lowercase alphanumeric + hyphens, max 63 chars |
+| `metadata.namespace` | string | Yes | Must exist before service |
+| `spec.type` | enum | Yes | ClusterIP, NodePort, LoadBalancer |
+| `spec.selector` | map | Yes | Must match Deployment pod labels |
+| `spec.ports[].port` | integer | Yes | 1-65535 |
+| `spec.ports[].targetPort` | integer | Yes | Must match container port |
+| `spec.ports[].protocol` | enum | Yes | TCP, UDP |
+
+## Service Types
+
+### ClusterIP (Default)
+- Internal cluster access only
+- Use for: Backend services, databases
+- Access: `<service-name>.<namespace>.svc.cluster.local:<port>`
+
+### NodePort
+- External access via node IP
+- Use for: Development testing
+- Access: `<node-ip>:<node-port>`
+
+### LoadBalancer
+- External access via load balancer
+- Use for: Production (requires cloud provider or minikube tunnel)
+- Access: `<load-balancer-ip>:<port>`
+
+## Examples
+
+### Frontend Service (ClusterIP)
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: todo-app
+  labels:
+    app: frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend
+  ports:
+  - name: http
+    protocol: TCP
+    port: 3000
+    targetPort: 3000
+```
+
+### Backend Service (ClusterIP)
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: todo-app
+  labels:
+    app: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8000
+    targetPort: 8000
+```
+
+### Database Service (Headless)
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  namespace: todo-app
+  labels:
+    app: database
+spec:
+  type: ClusterIP
+  clusterIP: None  # Headless service for StatefulSet
+  selector:
+    app: database
+  ports:
+  - name: postgres
+    protocol: TCP
+    port: 5432
+    targetPort: 5432
+```
+
+## Validation Rules
+
+1. **Selector Match**: `spec.selector` must match Deployment pod labels
+2. **Port Mapping**: `targetPort` must match container port in Deployment
+3. **Service Type**: Use ClusterIP for internal services, Ingress for external access
+4. **Headless Services**: Set `clusterIP: None` for StatefulSet services
+5. **Port Names**: Use descriptive names (http, https, postgres, etc.)

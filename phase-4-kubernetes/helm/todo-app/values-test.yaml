@@ -1,0 +1,178 @@
+# Testing Environment Values
+# Override default values for testing/staging
+
+global:
+  namespace: todo-app-test
+  environment: testing
+
+# Frontend configuration - moderate resources for testing
+frontend:
+  enabled: true
+  replicaCount: 2  # Multiple replicas for testing HA
+
+  image:
+    repository: todo-frontend
+    tag: latest
+    pullPolicy: IfNotPresent  # Pull if not present for testing
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  env:
+    nodeEnv: production  # Use production mode in testing
+
+# Backend configuration - moderate resources for testing
+backend:
+  enabled: true
+  replicaCount: 2  # Multiple replicas for testing HA
+
+  image:
+    repository: todo-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  env:
+    logLevel: info  # Standard logging in testing
+
+# Database configuration - moderate resources for testing
+database:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: postgres
+    tag: 15-alpine
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 5432
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+  persistence:
+    enabled: true
+    storageClass: standard
+    accessMode: ReadWriteOnce
+    size: 5Gi  # Standard storage for testing
+
+  env:
+    postgresDb: todo_db_test
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  host: todo-test.local
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+
+# ConfigMap data
+config:
+  nextPublicApiUrl: "http://todo-test.local/api"
+  databaseHost: "database"
+  databasePort: "5432"
+  databaseName: "todo_db_test"
+  logLevel: "info"
+  environment: "testing"
+
+# Secrets (testing defaults - change for actual testing)
+secrets:
+  postgresUser: "postgres"
+  postgresPassword: "test-postgres-password"
+  databaseUrl: "postgresql://postgres:test-postgres-password@database:5432/todo_db_test"
+  secretKey: "test-secret-key-change-for-real-testing"
+  openaiApiKey: ""  # Optional
+
+# Autoscaling disabled in testing (enable for load testing)
+autoscaling:
+  enabled: false
+  frontend:
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+  backend:
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+# Pod disruption budgets enabled in testing
+podDisruptionBudget:
+  enabled: true
+  frontend:
+    minAvailable: 1
+  backend:
+    minAvailable: 1
+
+# Network policies disabled in testing (enable for security testing)
+networkPolicy:
+  enabled: false
+
+# Service monitor disabled in testing (enable if Prometheus available)
+serviceMonitor:
+  enabled: false
+  interval: 30s

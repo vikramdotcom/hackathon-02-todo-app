@@ -1,0 +1,107 @@
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+  Add the following to your hosts file:
+
+  $(minikube ip) {{ .Values.ingress.host }}
+
+  Then access the application at:
+  http://{{ .Values.ingress.host }}
+
+  API endpoint:
+  http://{{ .Values.ingress.host }}/api
+{{- else }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Values.global.namespace }} -l "app.kubernetes.io/name={{ include "todo-app.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=frontend" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace {{ .Values.global.namespace }} port-forward $POD_NAME 3000:3000
+
+  Visit http://127.0.0.1:3000 to use your application
+{{- end }}
+
+2. Check the status of your deployment:
+  kubectl get pods -n {{ .Values.global.namespace }}
+  kubectl get services -n {{ .Values.global.namespace }}
+  kubectl get ingress -n {{ .Values.global.namespace }}
+
+3. View logs:
+  # Frontend logs
+  kubectl logs -f deployment/{{ include "todo-app.fullname" . }}-frontend -n {{ .Values.global.namespace }}
+
+  # Backend logs
+  kubectl logs -f deployment/{{ include "todo-app.fullname" . }}-backend -n {{ .Values.global.namespace }}
+
+  # Database logs
+  kubectl logs -f deployment/{{ include "todo-app.fullname" . }}-database -n {{ .Values.global.namespace }}
+
+  # Or use helper script (if available)
+  ./scripts/view-logs.sh all
+
+4. Check health:
+  # Backend health endpoint
+  kubectl exec -n {{ .Values.global.namespace }} deployment/{{ include "todo-app.fullname" . }}-backend -- curl -s http://localhost:8000/health
+
+  # Or use health check script (if available)
+  ./scripts/check-health.sh
+
+5. Scale services:
+  # Scale frontend
+  kubectl scale deployment/{{ include "todo-app.fullname" . }}-frontend --replicas=3 -n {{ .Values.global.namespace }}
+
+  # Scale backend
+  kubectl scale deployment/{{ include "todo-app.fullname" . }}-backend --replicas=3 -n {{ .Values.global.namespace }}
+
+  # Or use helper script (if available)
+  ./scripts/scale-service.sh frontend 3
+
+6. Monitor resources:
+  kubectl top pods -n {{ .Values.global.namespace }}
+  kubectl top nodes
+
+7. Troubleshooting:
+  # Describe a pod
+  kubectl describe pod <pod-name> -n {{ .Values.global.namespace }}
+
+  # Get events
+  kubectl get events -n {{ .Values.global.namespace }} --sort-by='.lastTimestamp'
+
+  # Check pod status
+  kubectl get pods -n {{ .Values.global.namespace }} -o wide
+
+  # View all logs
+  ./scripts/view-logs.sh all
+
+  # Run health check
+  ./scripts/check-health.sh
+
+8. Common Issues:
+
+  Issue: Pods not starting
+  Solution: Check logs and events
+    kubectl logs <pod-name> -n {{ .Values.global.namespace }}
+    kubectl describe pod <pod-name> -n {{ .Values.global.namespace }}
+    kubectl get events -n {{ .Values.global.namespace }}
+
+  Issue: Cannot access application
+  Solution: Check Ingress and hosts file
+    kubectl get ingress -n {{ .Values.global.namespace }}
+    kubectl describe ingress -n {{ .Values.global.namespace }}
+    # Verify hosts file has: $(minikube ip) {{ .Values.ingress.host }}
+
+  Issue: Database connection failed
+  Solution: Check database pod and secrets
+    kubectl get pods -l component=database -n {{ .Values.global.namespace }}
+    kubectl logs deployment/{{ include "todo-app.fullname" . }}-database -n {{ .Values.global.namespace }}
+    kubectl get secret {{ include "todo-app.fullname" . }}-secrets -n {{ .Values.global.namespace }}
+
+  Issue: High resource usage
+  Solution: Check metrics and scale if needed
+    kubectl top pods -n {{ .Values.global.namespace }}
+    ./scripts/scale-service.sh all 3
+
+9. Cleanup:
+  helm uninstall {{ .Release.Name }} -n {{ .Values.global.namespace }}
+  kubectl delete namespace {{ .Values.global.namespace }}
+
+For more information, see the documentation in the phase-4-kubernetes directory:
+  - QUICKSTART.md - Quick start guide
+  - TROUBLESHOOTING.md - Detailed troubleshooting
+  - SCALING.md - Scaling and resource management
+  - docs/DEPLOYMENT.md - Complete deployment guide

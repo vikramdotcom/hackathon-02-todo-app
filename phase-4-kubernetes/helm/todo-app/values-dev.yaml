@@ -1,0 +1,157 @@
+# Development Environment Values
+# Override default values for local development
+
+global:
+  namespace: todo-app
+  environment: development
+
+# Frontend configuration - reduced resources for dev
+frontend:
+  enabled: true
+  replicaCount: 1  # Single replica for dev
+
+  image:
+    repository: todo-frontend
+    tag: latest
+    pullPolicy: Never  # Always use local images in dev
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  resources:
+    requests:
+      memory: "128Mi"  # Reduced for dev
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 20  # Faster startup in dev
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+  env:
+    nodeEnv: development
+
+# Backend configuration - reduced resources for dev
+backend:
+  enabled: true
+  replicaCount: 1  # Single replica for dev
+
+  image:
+    repository: todo-backend
+    tag: latest
+    pullPolicy: Never
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 20
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+  env:
+    logLevel: debug  # Verbose logging in dev
+
+# Database configuration - minimal resources for dev
+database:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: postgres
+    tag: 15-alpine
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 5432
+
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+
+  persistence:
+    enabled: true
+    storageClass: standard
+    accessMode: ReadWriteOnce
+    size: 2Gi  # Smaller storage for dev
+
+  env:
+    postgresDb: todo_db_dev
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  host: todo.local
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+
+# ConfigMap data
+config:
+  nextPublicApiUrl: "http://todo.local/api"
+  databaseHost: "database"
+  databasePort: "5432"
+  databaseName: "todo_db_dev"
+  logLevel: "debug"
+  environment: "development"
+
+# Secrets (development defaults - NOT for production)
+secrets:
+  postgresUser: "postgres"
+  postgresPassword: "postgres"
+  databaseUrl: "postgresql://postgres:postgres@database:5432/todo_db_dev"
+  secretKey: "dev-secret-key-not-for-production"
+  openaiApiKey: ""  # Optional
+
+# Autoscaling disabled in dev
+autoscaling:
+  enabled: false
+
+# Pod disruption budgets disabled in dev
+podDisruptionBudget:
+  enabled: false
+
+# Network policies disabled in dev
+networkPolicy:
+  enabled: false
+
+# Service monitor disabled in dev
+serviceMonitor:
+  enabled: false

@@ -1,0 +1,113 @@
+# ConfigMap Resource Contract
+
+**Resource Type**: ConfigMap (v1)
+**Purpose**: Store non-sensitive configuration data as key-value pairs
+
+## Schema
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: <configmap-name>
+  namespace: <namespace>
+  labels:
+    app: <service-name>
+data:
+  <key>: <value>
+  <key>: |
+    <multi-line-value>
+```
+
+## Field Constraints
+
+| Field | Type | Required | Constraints |
+|-------|------|----------|-------------|
+| `metadata.name` | string | Yes | Lowercase alphanumeric + hyphens, max 253 chars |
+| `metadata.namespace` | string | Yes | Must exist before ConfigMap |
+| `data` | map[string]string | Yes | Key-value pairs (all values are strings) |
+
+## Usage Patterns
+
+### Environment Variables
+Inject ConfigMap values as environment variables in pods:
+
+```yaml
+env:
+- name: API_URL
+  valueFrom:
+    configMapKeyRef:
+      name: frontend-config
+      key: api-url
+```
+
+### Volume Mount
+Mount ConfigMap as files in pods:
+
+```yaml
+volumes:
+- name: config
+  configMap:
+    name: backend-config
+volumeMounts:
+- name: config
+  mountPath: /app/config
+  readOnly: true
+```
+
+## Examples
+
+### Frontend ConfigMap
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: todo-app
+  labels:
+    app: frontend
+data:
+  api-url: "http://backend:8000/api/v1"
+  environment: "development"
+  log-level: "info"
+```
+
+### Backend ConfigMap
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: todo-app
+  labels:
+    app: backend
+data:
+  environment: "development"
+  log-level: "debug"
+  api-v1-prefix: "/api/v1"
+  cors-origins: |
+    ["http://localhost:3000", "http://frontend:3000"]
+  openai-model: "gpt-3.5-turbo"
+  openai-max-tokens: "1000"
+  openai-temperature: "0.7"
+  chat-session-timeout-minutes: "30"
+  chat-max-messages-per-session: "20"
+```
+
+## Validation Rules
+
+1. **Non-Sensitive Data Only**: Never store passwords, API keys, or tokens in ConfigMaps
+2. **String Values**: All values must be strings (use quotes for numbers)
+3. **Size Limit**: ConfigMaps have a 1MB size limit
+4. **Immutability**: Mark as immutable for better performance (optional)
+5. **Naming Convention**: Use `<service-name>-config` format
+
+## Best Practices
+
+- Use ConfigMaps for application configuration, not secrets
+- Update ConfigMaps via Helm values, not manual edits
+- Restart pods after ConfigMap changes (or use reloader)
+- Use descriptive keys (kebab-case preferred)
+- Document all configuration keys in comments

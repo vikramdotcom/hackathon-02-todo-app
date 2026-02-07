@@ -1,498 +1,304 @@
 # Phase IV: Local Kubernetes Deployment
 
-**Status**: 🔜 Planned
-**Points**: 250
-**Due Date**: Jan 4, 2026
-**Technology Stack**: Docker, Minikube, Helm, kubectl-ai, kagent
+**Status**: 🚧 In Development
+**Branch**: `001-local-k8s-deployment`
+**Technology Stack**: Docker, Minikube, Kubernetes, Helm
 
 ## Overview
 
-Phase IV containerizes the full-stack application and deploys it to a local Kubernetes cluster using Minikube. This phase introduces container orchestration, service mesh, and AI-powered Kubernetes management tools.
+Phase IV containerizes the Phase III AI-Powered Todo Chatbot application and deploys it to a local Kubernetes cluster (Minikube). This phase focuses on containerization, orchestration, and operational maturity without changing application business logic.
 
-## Planned Features
+## Features
 
-### Containerization
-- 🔜 Docker images for all services
-- 🔜 Multi-stage builds for optimization
-- 🔜 Docker Compose for local development
-- 🔜 Container registry integration
-- 🔜 Image versioning and tagging
-- 🔜 Security scanning and hardening
-
-### Kubernetes Deployment
-- 🔜 Minikube local cluster setup
-- 🔜 Kubernetes manifests (Deployments, Services, ConfigMaps, Secrets)
-- 🔜 Horizontal Pod Autoscaling (HPA)
-- 🔜 Resource limits and requests
-- 🔜 Health checks (liveness, readiness)
-- 🔜 Rolling updates and rollbacks
-
-### Helm Charts
-- 🔜 Helm chart for todo application
-- 🔜 Parameterized configurations
-- 🔜 Environment-specific values
-- 🔜 Chart dependencies
-- 🔜 Helm hooks for migrations
-- 🔜 Chart testing and validation
-
-### kubectl-ai Integration
-- 🔜 Natural language Kubernetes commands
-- 🔜 AI-powered troubleshooting
-- 🔜 Intelligent resource recommendations
-- 🔜 Automated debugging assistance
-- 🔜 Context-aware kubectl operations
-
-### kagent (Kubernetes Agent)
-- 🔜 AI agent for cluster management
-- 🔜 Automated deployment workflows
-- 🔜 Intelligent scaling decisions
-- 🔜 Anomaly detection and alerts
-- 🔜 Self-healing capabilities
-- 🔜 Cost optimization recommendations
-
-### Observability
-- 🔜 Prometheus metrics collection
-- 🔜 Grafana dashboards
-- 🔜 Centralized logging (EFK stack)
-- 🔜 Distributed tracing (Jaeger)
-- 🔜 Service mesh (Istio/Linkerd)
-- 🔜 Alert management
+- ✅ Docker containerization for all services (frontend, backend, database)
+- ✅ Local Kubernetes deployment with Minikube
+- ✅ Helm chart-based installation
+- ✅ One-command deployment
+- ✅ Cross-platform support (Windows, macOS, Linux)
+- ✅ Environment reproducibility
+- ✅ Service scaling and resource management
+- ✅ Health checks and monitoring
+- ✅ Configuration management
 
 ## Architecture
 
 ```
-phase-4-kubernetes/
-├── docker/
-│   ├── frontend/
-│   │   ├── Dockerfile
-│   │   └── .dockerignore
-│   ├── backend/
-│   │   ├── Dockerfile
-│   │   └── .dockerignore
-│   └── chatbot/
-│       ├── Dockerfile
-│       └── .dockerignore
-├── k8s/
-│   ├── base/                  # Base Kubernetes manifests
-│   │   ├── namespace.yaml
-│   │   ├── frontend/
-│   │   │   ├── deployment.yaml
-│   │   │   ├── service.yaml
-│   │   │   └── ingress.yaml
-│   │   ├── backend/
-│   │   │   ├── deployment.yaml
-│   │   │   ├── service.yaml
-│   │   │   └── configmap.yaml
-│   │   ├── chatbot/
-│   │   │   ├── deployment.yaml
-│   │   │   └── service.yaml
-│   │   └── database/
-│   │       ├── statefulset.yaml
-│   │       ├── service.yaml
-│   │       └── pvc.yaml
-│   └── overlays/              # Kustomize overlays
-│       ├── dev/
-│       ├── staging/
-│       └── prod/
-├── helm/
-│   └── todo-app/
-│       ├── Chart.yaml
-│       ├── values.yaml
-│       ├── values-dev.yaml
-│       ├── values-prod.yaml
-│       └── templates/
-│           ├── deployment.yaml
-│           ├── service.yaml
-│           ├── ingress.yaml
-│           ├── configmap.yaml
-│           ├── secret.yaml
-│           └── hpa.yaml
-├── monitoring/
-│   ├── prometheus/
-│   │   ├── prometheus.yaml
-│   │   └── rules.yaml
-│   ├── grafana/
-│   │   └── dashboards/
-│   └── alertmanager/
-│       └── config.yaml
-├── scripts/
-│   ├── setup-minikube.sh
-│   ├── build-images.sh
-│   ├── deploy.sh
-│   └── cleanup.sh
-├── docker-compose.yml
-└── README.md                  # This file
+Minikube Cluster
+│
+├── Namespace: todo-app
+│
+├── Frontend (Deployment + Service)
+│   └── Next.js 14 + TypeScript
+│
+├── Backend (Deployment + Service)
+│   └── FastAPI + Python 3.11
+│
+├── Database (StatefulSet + Service)
+│   └── PostgreSQL 15
+│
+└── Ingress (NGINX)
+    └── http://todo.local
 ```
-
-## Technology Stack
-
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Containerization | Docker | Package applications into containers |
-| Orchestration | Kubernetes (Minikube) | Container orchestration and management |
-| Package Manager | Helm | Kubernetes application packaging |
-| AI CLI | kubectl-ai | Natural language Kubernetes commands |
-| AI Agent | kagent | Intelligent cluster management |
-| Metrics | Prometheus | Metrics collection and storage |
-| Visualization | Grafana | Metrics dashboards and alerts |
-| Logging | EFK Stack | Centralized logging (Elasticsearch, Fluentd, Kibana) |
-| Tracing | Jaeger | Distributed tracing |
-| Service Mesh | Istio/Linkerd | Traffic management and observability |
-
-## Docker Images
-
-### Frontend Image
-```dockerfile
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-FROM node:18-alpine
-WORKDIR /app
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-EXPOSE 3000
-CMD ["npm", "start"]
-```
-
-### Backend Image
-```dockerfile
-FROM python:3.13-slim AS builder
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-FROM python:3.13-slim
-WORKDIR /app
-COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
-COPY . .
-EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-## Kubernetes Resources
-
-### Deployment Example
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: todo-backend
-  namespace: todo-app
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: todo-backend
-  template:
-    metadata:
-      labels:
-        app: todo-backend
-    spec:
-      containers:
-      - name: backend
-        image: todo-backend:latest
-        ports:
-        - containerPort: 8000
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: db-credentials
-              key: url
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-```
-
-### Service Example
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: todo-backend
-  namespace: todo-app
-spec:
-  selector:
-    app: todo-backend
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8000
-  type: ClusterIP
-```
-
-### Ingress Example
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: todo-ingress
-  namespace: todo-app
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-  - host: todo.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: todo-frontend
-            port:
-              number: 80
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: todo-backend
-            port:
-              number: 80
-```
-
-## Helm Chart
-
-### Chart.yaml
-```yaml
-apiVersion: v2
-name: todo-app
-description: A Helm chart for Todo Application
-type: application
-version: 1.0.0
-appVersion: "1.0.0"
-dependencies:
-  - name: postgresql
-    version: 12.x.x
-    repository: https://charts.bitnami.com/bitnami
-```
-
-### values.yaml
-```yaml
-replicaCount: 3
-
-frontend:
-  image:
-    repository: todo-frontend
-    tag: latest
-    pullPolicy: IfNotPresent
-  service:
-    type: ClusterIP
-    port: 80
-
-backend:
-  image:
-    repository: todo-backend
-    tag: latest
-    pullPolicy: IfNotPresent
-  service:
-    type: ClusterIP
-    port: 80
-  env:
-    DATABASE_URL: postgresql://user:pass@db:5432/todos
-
-ingress:
-  enabled: true
-  className: nginx
-  hosts:
-    - host: todo.local
-      paths:
-        - path: /
-          pathType: Prefix
-
-autoscaling:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 80
-```
-
-## kubectl-ai Usage
-
-### Natural Language Commands
-```bash
-# Deploy application
-kubectl-ai "deploy the todo app with 3 replicas"
-
-# Scale deployment
-kubectl-ai "scale the backend to 5 pods"
-
-# Troubleshoot issues
-kubectl-ai "why is the frontend pod crashing?"
-
-# Check resource usage
-kubectl-ai "show me which pods are using the most memory"
-
-# Update configuration
-kubectl-ai "update the backend environment variable DATABASE_URL"
-```
-
-## kagent Capabilities
-
-### Automated Workflows
-```python
-# kagent configuration
-from kagent import Agent, Workflow
-
-# Define deployment workflow
-deploy_workflow = Workflow(
-    name="deploy-todo-app",
-    steps=[
-        "build_docker_images",
-        "push_to_registry",
-        "apply_k8s_manifests",
-        "wait_for_rollout",
-        "run_smoke_tests"
-    ]
-)
-
-# Intelligent scaling
-scaling_agent = Agent(
-    name="autoscaler",
-    triggers=["high_cpu", "high_memory", "increased_traffic"],
-    actions=["scale_up", "scale_down"],
-    learning_enabled=True
-)
-
-# Self-healing
-healing_agent = Agent(
-    name="healer",
-    monitors=["pod_crashes", "failed_health_checks"],
-    actions=["restart_pod", "rollback_deployment", "alert_team"]
-)
-```
-
-## Development Roadmap
-
-### Phase 4.1: Containerization
-- [ ] Create Dockerfiles for all services
-- [ ] Optimize image sizes
-- [ ] Setup Docker Compose
-- [ ] Configure multi-stage builds
-- [ ] Implement security scanning
-
-### Phase 4.2: Minikube Setup
-- [ ] Install and configure Minikube
-- [ ] Setup local registry
-- [ ] Configure networking
-- [ ] Enable required addons
-- [ ] Setup ingress controller
-
-### Phase 4.3: Kubernetes Manifests
-- [ ] Create Deployments
-- [ ] Define Services
-- [ ] Configure ConfigMaps and Secrets
-- [ ] Setup Ingress rules
-- [ ] Implement HPA
-
-### Phase 4.4: Helm Charts
-- [ ] Initialize Helm chart
-- [ ] Create templates
-- [ ] Define values files
-- [ ] Add chart dependencies
-- [ ] Test chart installation
-
-### Phase 4.5: AI Tools Integration
-- [ ] Setup kubectl-ai
-- [ ] Configure kagent
-- [ ] Create custom workflows
-- [ ] Implement monitoring agents
-- [ ] Test AI-powered operations
-
-### Phase 4.6: Observability
-- [ ] Deploy Prometheus
-- [ ] Setup Grafana dashboards
-- [ ] Configure logging stack
-- [ ] Implement tracing
-- [ ] Setup alerting
 
 ## Prerequisites
 
-- Docker Desktop or Docker Engine
-- Minikube
-- kubectl
-- Helm 3+
-- kubectl-ai
-- kagent
-- 8GB+ RAM for Minikube
+### Required Software
 
-## Getting Started (Coming Soon)
+| Tool | Minimum Version | Purpose |
+|------|----------------|---------|
+| Docker | 24.0+ | Container runtime |
+| Minikube | 1.30+ | Local Kubernetes cluster |
+| kubectl | 1.28+ | Kubernetes CLI |
+| Helm | 3.12+ | Kubernetes package manager |
+
+### System Requirements
+
+- **RAM**: 8GB minimum (12GB recommended)
+- **Disk Space**: 20GB free
+- **OS**: Windows 10+, macOS 11+, or Ubuntu 20.04+
+- **Network**: Internet access for pulling images
+
+## Quick Start
+
+### 1. Validate Prerequisites
 
 ```bash
-# Setup Minikube
+# Linux/macOS
+./scripts/validate-prerequisites.sh
+
+# Windows
+scripts\validate-prerequisites.bat
+```
+
+### 2. Start Minikube
+
+```bash
+# Linux/macOS
 ./scripts/setup-minikube.sh
 
-# Build Docker images
-./scripts/build-images.sh
-
-# Deploy with Helm
-helm install todo-app ./helm/todo-app -f ./helm/todo-app/values-dev.yaml
-
-# Access application
-minikube service todo-frontend --url
-
-# Use kubectl-ai
-kubectl-ai "show me all pods in the todo-app namespace"
-
-# Monitor with Grafana
-minikube service grafana --url
+# Windows
+scripts\setup-minikube.bat
 ```
 
-## Useful Commands
+### 3. Configure Local DNS
+
+Add to your hosts file:
+```
+<minikube-ip> todo.local
+```
+
+### 4. Deploy Application
 
 ```bash
-# Minikube
-minikube start --cpus=4 --memory=8192
-minikube dashboard
-minikube tunnel
+# Linux/macOS
+./scripts/deploy.sh
 
-# Docker
-docker build -t todo-frontend:latest ./docker/frontend
-docker-compose up -d
-
-# Kubernetes
-kubectl get all -n todo-app
-kubectl logs -f deployment/todo-backend -n todo-app
-kubectl describe pod <pod-name> -n todo-app
-
-# Helm
-helm list
-helm upgrade todo-app ./helm/todo-app
-helm rollback todo-app 1
-
-# kubectl-ai
-kubectl-ai "restart all backend pods"
-kubectl-ai "show me resource usage for the last hour"
+# Windows
+scripts\deploy.bat
 ```
 
-## Migration from Phase III
+### 5. Access Application
 
-The Phase III application will be containerized:
-- Frontend → Docker image + Kubernetes Deployment
-- Backend → Docker image + Kubernetes Deployment
-- Chatbot → Docker image + Kubernetes Deployment
-- Database → StatefulSet with persistent volumes
+Open your browser: http://todo.local
+
+## Directory Structure
+
+```
+phase-4-kubernetes/
+├── docker/                 # Docker containerization artifacts
+│   ├── frontend/          # Frontend Dockerfile and config
+│   ├── backend/           # Backend Dockerfile and config
+│   └── database/          # Database initialization scripts
+├── k8s/                   # Kubernetes manifests
+│   ├── frontend/          # Frontend resources
+│   ├── backend/           # Backend resources
+│   ├── database/          # Database resources
+│   └── ingress.yaml       # Ingress configuration
+├── helm/                  # Helm chart
+│   └── todo-app/         # Main chart
+│       ├── Chart.yaml    # Chart metadata
+│       ├── values.yaml   # Default values
+│       └── templates/    # Kubernetes resource templates
+├── scripts/               # Automation scripts
+│   ├── setup-minikube.sh # Minikube initialization
+│   ├── build-images.sh   # Docker image building
+│   ├── deploy.sh         # One-command deployment
+│   └── cleanup.sh        # Environment teardown
+├── docs/                  # Documentation
+│   ├── SETUP.md          # Setup guide
+│   ├── DEPLOYMENT.md     # Deployment instructions
+│   ├── TROUBLESHOOTING.md # Common issues
+│   └── SCALING.md        # Scaling guide
+├── tests/                 # Infrastructure tests
+├── app/                   # Phase III application code (copied)
+│   ├── frontend/         # Next.js application
+│   └── backend/          # FastAPI application
+├── .env.example          # Environment variables template
+└── README.md             # This file
+```
+
+## Configuration
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+cp .env.example .env
+# Edit .env with your values
+```
+
+Key variables:
+- `DATABASE_URL`: PostgreSQL connection string
+- `OPENAI_API_KEY`: OpenAI API key for chatbot
+- `SECRET_KEY`: JWT secret key
+- `INGRESS_HOST`: Local hostname (default: todo.local)
+
+### Helm Values
+
+Customize deployment via Helm values:
+
+```bash
+# Development profile
+helm install todo-app ./helm/todo-app -f ./helm/todo-app/values-dev.yaml
+
+# Custom values
+helm install todo-app ./helm/todo-app \
+  --set frontend.replicaCount=2 \
+  --set backend.replicaCount=2
+```
+
+## Common Operations
+
+### Scaling Services
+
+```bash
+# Scale backend to 3 replicas
+kubectl scale deployment backend --replicas=3 -n todo-app
+
+# Or use helper script
+./scripts/scale-service.sh backend 3
+```
+
+### Viewing Logs
+
+```bash
+# Follow backend logs
+kubectl logs -f deployment/backend -n todo-app
+
+# Or use helper script
+./scripts/view-logs.sh backend
+```
+
+### Checking Health
+
+```bash
+# Check all pods
+kubectl get pods -n todo-app
+
+# Check service endpoints
+kubectl get svc -n todo-app
+
+# Or use helper script
+./scripts/check-health.sh
+```
+
+### Cleanup
+
+```bash
+# Uninstall application
+helm uninstall todo-app -n todo-app
+
+# Delete namespace
+kubectl delete namespace todo-app
+
+# Or use cleanup script
+./scripts/cleanup.sh
+```
+
+## Documentation
+
+- [Setup Guide](docs/SETUP.md) - Prerequisites and installation
+- [Deployment Guide](docs/DEPLOYMENT.md) - Deployment instructions
+- [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [Scaling Guide](docs/SCALING.md) - Service scaling and resource management
+- [Architecture](docs/ARCHITECTURE.md) - System architecture overview
+
+## Development
+
+### Building Images
+
+```bash
+# Build all images
+./scripts/build-images.sh
+
+# Build specific image
+docker build -t todo-frontend:latest -f docker/frontend/Dockerfile app/frontend/
+```
+
+### Testing Deployment
+
+```bash
+# Run deployment test
+./tests/deployment-test.sh
+
+# Validate Helm chart
+./tests/helm-lint.sh
+
+# Validate Kubernetes manifests
+./tests/k8s-validate.sh
+```
+
+## Troubleshooting
+
+### Pods Not Starting
+
+```bash
+# Check pod status
+kubectl describe pod <pod-name> -n todo-app
+
+# Check events
+kubectl get events -n todo-app --sort-by='.lastTimestamp'
+```
+
+### Image Pull Errors
+
+```bash
+# Verify images in Minikube
+eval $(minikube docker-env)
+docker images | grep todo
+
+# Rebuild if needed
+./scripts/build-images.sh
+```
+
+### Ingress Not Working
+
+```bash
+# Check Ingress addon
+minikube addons list | grep ingress
+
+# Enable if disabled
+minikube addons enable ingress
+
+# Verify hosts file
+cat /etc/hosts | grep todo.local
+```
+
+For more troubleshooting, see [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
+
+## Success Criteria
+
+Phase IV is complete when:
+
+- ✅ All services run successfully in Minikube
+- ✅ Deployment completes in <10 minutes from clean environment
+- ✅ 95%+ first-attempt success rate
+- ✅ All services ready within 5 minutes
+- ✅ Cross-platform compatibility (Windows, macOS, Linux)
+- ✅ Zero data loss during service restarts
+- ✅ Health checks detect failures within 10 seconds
+- ✅ Scaling operations complete within 1 minute
 
 ## Next Phase
 
@@ -501,13 +307,16 @@ The Phase III application will be containerized:
 - Dapr for microservices
 - DigitalOcean Kubernetes (DOKS)
 - Production-grade infrastructure
-- Advanced monitoring and observability
 
 See [../phase-5-cloud-deployment/README.md](../phase-5-cloud-deployment/README.md) for Phase V details.
 
-## Status
+## Support
 
-🔜 **Not Started** - Waiting for Phase III completion and approval.
+If you encounter issues:
+1. Check the [troubleshooting guide](docs/TROUBLESHOOTING.md)
+2. Review pod logs and events
+3. Verify all prerequisites are met
+4. Ensure sufficient system resources
 
 ---
 

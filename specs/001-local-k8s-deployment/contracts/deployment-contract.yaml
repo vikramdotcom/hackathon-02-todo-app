@@ -1,0 +1,220 @@
+# Deployment Resource Contract
+
+**Resource Type**: Deployment (apps/v1)
+**Purpose**: Defines how application pods should be created and managed
+
+## Schema
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <service-name>
+  namespace: <namespace>
+  labels:
+    app: <service-name>
+    version: <version>
+spec:
+  replicas: <replica-count>
+  selector:
+    matchLabels:
+      app: <service-name>
+  template:
+    metadata:
+      labels:
+        app: <service-name>
+        version: <version>
+    spec:
+      containers:
+      - name: <container-name>
+        image: <image-repository>:<image-tag>
+        imagePullPolicy: <pull-policy>
+        ports:
+        - containerPort: <port>
+          protocol: TCP
+        env:
+        - name: <env-var-name>
+          value: <env-var-value>
+        - name: <secret-env-var-name>
+          valueFrom:
+            secretKeyRef:
+              name: <secret-name>
+              key: <secret-key>
+        resources:
+          requests:
+            memory: <memory-request>
+            cpu: <cpu-request>
+          limits:
+            memory: <memory-limit>
+            cpu: <cpu-limit>
+        livenessProbe:
+          httpGet:
+            path: <health-path>
+            port: <health-port>
+          initialDelaySeconds: <initial-delay>
+          periodSeconds: <period>
+          timeoutSeconds: <timeout>
+          failureThreshold: <failure-threshold>
+        readinessProbe:
+          httpGet:
+            path: <health-path>
+            port: <health-port>
+          initialDelaySeconds: <initial-delay>
+          periodSeconds: <period>
+          timeoutSeconds: <timeout>
+          failureThreshold: <failure-threshold>
+```
+
+## Field Constraints
+
+| Field | Type | Required | Constraints |
+|-------|------|----------|-------------|
+| `metadata.name` | string | Yes | Lowercase alphanumeric + hyphens, max 63 chars |
+| `metadata.namespace` | string | Yes | Must exist before deployment |
+| `spec.replicas` | integer | Yes | 1-10 for local deployment |
+| `spec.selector.matchLabels` | map | Yes | Must match template labels |
+| `spec.template.spec.containers[].image` | string | Yes | Valid image reference |
+| `spec.template.spec.containers[].ports[].containerPort` | integer | Yes | 1-65535 |
+| `spec.template.spec.containers[].resources.requests.memory` | string | Yes | Format: "256Mi", "1Gi" |
+| `spec.template.spec.containers[].resources.requests.cpu` | string | Yes | Format: "250m", "1" |
+| `spec.template.spec.containers[].resources.limits.memory` | string | Yes | ≥ requests.memory |
+| `spec.template.spec.containers[].resources.limits.cpu` | string | Yes | ≥ requests.cpu |
+
+## Examples
+
+### Frontend Deployment
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: todo-app
+  labels:
+    app: frontend
+    version: "1.0.0"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+        version: "1.0.0"
+    spec:
+      containers:
+      - name: frontend
+        image: todo-frontend:1.0.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          value: "http://backend:8000/api/v1"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+```
+
+### Backend Deployment
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: todo-app
+  labels:
+    app: backend
+    version: "1.0.0"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+        version: "1.0.0"
+    spec:
+      containers:
+      - name: backend
+        image: todo-backend:1.0.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: database-url
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: openai-api-key
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: jwt-secret
+        - name: ENVIRONMENT
+          value: "development"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+```
+
+## Validation Rules
+
+1. **Label Consistency**: `spec.selector.matchLabels` must match `spec.template.metadata.labels`
+2. **Resource Limits**: Limits must be greater than or equal to requests
+3. **Probe Configuration**: Liveness probe `initialDelaySeconds` should be > readiness probe
+4. **Image Pull Policy**: Use `IfNotPresent` for local development, `Always` for production
+5. **Replica Count**: Keep ≤ 3 for local development to stay within resource constraints

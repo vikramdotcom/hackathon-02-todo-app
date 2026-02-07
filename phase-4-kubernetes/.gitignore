@@ -1,0 +1,45 @@
+# Kubernetes secrets (never commit actual secrets)
+k8s/secret.yaml
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Helm generated files
+helm/todo-app/charts/
+helm/todo-app/*.tgz
+
+# Temporary files
+*.tmp
+*.log
+*.swp
+*.swo
+*~
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.tar.gz
+*.zip
+
+# Minikube/kubectl cache
+.minikube/
+.kube/cache/

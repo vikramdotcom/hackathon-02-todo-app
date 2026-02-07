@@ -1,0 +1,61 @@
+{{- if .Values.database.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "todo-app.fullname" . }}-database
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "todo-app.database.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.database.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "todo-app.database.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "todo-app.database.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: postgres
+        image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+        imagePullPolicy: {{ .Values.database.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.database.service.targetPort }}
+          name: postgres
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "todo-app.fullname" . }}-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "todo-app.fullname" . }}-secrets
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "todo-app.fullname" . }}-config
+              key: DATABASE_NAME
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        {{- if .Values.database.persistence.enabled }}
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        {{- end }}
+        resources:
+          {{- toYaml .Values.database.resources | nindent 10 }}
+        livenessProbe:
+          {{- toYaml .Values.database.livenessProbe | nindent 10 }}
+        readinessProbe:
+          {{- toYaml .Values.database.readinessProbe | nindent 10 }}
+      {{- if .Values.database.persistence.enabled }}
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: {{ include "todo-app.fullname" . }}-postgres-pvc
+      {{- end }}
+{{- end }}

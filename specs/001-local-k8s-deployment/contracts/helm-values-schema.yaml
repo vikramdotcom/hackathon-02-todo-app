@@ -1,0 +1,283 @@
+# Helm Values Schema
+
+**Purpose**: Define the structure and validation rules for Helm chart values.yaml
+
+## Schema Structure
+
+```yaml
+# Global configuration (shared across all services)
+global:
+  namespace: string (required)
+  imageRegistry: string (required)
+  imagePullPolicy: enum[Always, IfNotPresent, Never] (required)
+
+# Frontend service configuration
+frontend:
+  enabled: boolean (default: true)
+  replicaCount: integer (1-10, default: 1)
+  image:
+    repository: string (required)
+    tag: string (required)
+  service:
+    type: enum[ClusterIP, NodePort, LoadBalancer] (default: ClusterIP)
+    port: integer (1-65535, default: 3000)
+  resources:
+    requests:
+      memory: string (format: "256Mi", required)
+      cpu: string (format: "250m", required)
+    limits:
+      memory: string (format: "512Mi", required)
+      cpu: string (format: "500m", required)
+  env: map[string]string (optional)
+
+# Backend service configuration
+backend:
+  enabled: boolean (default: true)
+  replicaCount: integer (1-10, default: 1)
+  image:
+    repository: string (required)
+    tag: string (required)
+  service:
+    type: enum[ClusterIP, NodePort, LoadBalancer] (default: ClusterIP)
+    port: integer (1-65535, default: 8000)
+  resources:
+    requests:
+      memory: string (format: "512Mi", required)
+      cpu: string (format: "500m", required)
+    limits:
+      memory: string (format: "1Gi", required)
+      cpu: string (format: "1000m", required)
+  env: map[string]string (optional)
+  secrets: map[string]string (optional)
+
+# Database service configuration
+database:
+  enabled: boolean (default: true)
+  replicaCount: integer (1, fixed for StatefulSet)
+  image:
+    repository: string (default: "postgres")
+    tag: string (default: "15-alpine")
+  service:
+    type: enum[ClusterIP] (fixed)
+    port: integer (default: 5432)
+  persistence:
+    enabled: boolean (default: true)
+    size: string (format: "10Gi", required)
+    storageClass: string (default: "standard")
+    accessMode: enum[ReadWriteOnce, ReadWriteMany] (default: ReadWriteOnce)
+  resources:
+    requests:
+      memory: string (format: "512Mi", required)
+      cpu: string (format: "250m", required)
+    limits:
+      memory: string (format: "1Gi", required)
+      cpu: string (format: "500m", required)
+  secrets: map[string]string (optional)
+
+# Ingress configuration
+ingress:
+  enabled: boolean (default: true)
+  className: string (default: "nginx")
+  host: string (required)
+  tls:
+    enabled: boolean (default: false)
+    secretName: string (optional)
+  annotations: map[string]string (optional)
+```
+
+## Validation Rules
+
+### Global
+- `namespace`: Must match Kubernetes naming conventions (lowercase, alphanumeric, hyphens)
+- `imageRegistry`: Must be valid registry URL (e.g., "docker.io", "gcr.io")
+- `imagePullPolicy`: Must be one of: Always, IfNotPresent, Never
+
+### Service Configuration
+- `replicaCount`: Must be between 1 and 10 for local deployment
+- `image.repository`: Must not be empty
+- `image.tag`: Must not be empty or "latest" in production
+- `service.port`: Must be between 1 and 65535
+- `resources.requests`: Must be less than or equal to `resources.limits`
+
+### Database
+- `replicaCount`: Must be 1 (StatefulSet limitation for local deployment)
+- `persistence.size`: Must be valid Kubernetes quantity (e.g., "10Gi", "5Gi")
+- `persistence.storageClass`: Must exist in cluster
+
+### Ingress
+- `host`: Must be valid hostname (e.g., "todo.local")
+- `tls.secretName`: Required if `tls.enabled` is true
+
+## Default Values Example
+
+```yaml
+global:
+  namespace: todo-app
+  imageRegistry: docker.io
+  imagePullPolicy: IfNotPresent
+
+frontend:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: todo-frontend
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  env:
+    NEXT_PUBLIC_API_URL: "http://backend:8000/api/v1"
+
+backend:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: todo-backend
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 8000
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+  env:
+    ENVIRONMENT: "development"
+    LOG_LEVEL: "info"
+    API_V1_PREFIX: "/api/v1"
+    OPENAI_MODEL: "gpt-3.5-turbo"
+  secrets:
+    DATABASE_URL: "backend-secrets/database-url"
+    OPENAI_API_KEY: "backend-secrets/openai-api-key"
+    SECRET_KEY: "backend-secrets/jwt-secret"
+
+database:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: 15-alpine
+  service:
+    type: ClusterIP
+    port: 5432
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: standard
+    accessMode: ReadWriteOnce
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  secrets:
+    POSTGRES_PASSWORD: "database-secrets/postgres-password"
+    POSTGRES_USER: "database-secrets/postgres-user"
+    POSTGRES_DB: "database-secrets/postgres-db"
+
+ingress:
+  enabled: true
+  className: nginx
+  host: todo.local
+  tls:
+    enabled: false
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+```
+
+## Environment-Specific Overrides
+
+### Development (values-dev.yaml)
+```yaml
+frontend:
+  replicaCount: 1
+  image:
+    tag: dev
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+
+backend:
+  replicaCount: 1
+  image:
+    tag: dev
+  env:
+    LOG_LEVEL: "debug"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+database:
+  persistence:
+    size: 5Gi
+
+ingress:
+  host: todo-dev.local
+```
+
+### Testing (values-test.yaml)
+```yaml
+frontend:
+  replicaCount: 2
+  image:
+    tag: test
+
+backend:
+  replicaCount: 2
+  image:
+    tag: test
+  env:
+    LOG_LEVEL: "info"
+
+database:
+  persistence:
+    size: 10Gi
+
+ingress:
+  host: todo-test.local
+```
+
+## Usage
+
+### Install with default values
+```bash
+helm install todo-app ./helm/todo-app
+```
+
+### Install with development overrides
+```bash
+helm install todo-app ./helm/todo-app -f ./helm/todo-app/values-dev.yaml
+```
+
+### Install with custom values
+```bash
+helm install todo-app ./helm/todo-app \
+  --set frontend.replicaCount=3 \
+  --set backend.image.tag=1.0.0
+```
+
+### Validate values
+```bash
+helm lint ./helm/todo-app -f ./helm/todo-app/values-dev.yaml
+helm template todo-app ./helm/todo-app -f ./helm/todo-app/values-dev.yaml
+```

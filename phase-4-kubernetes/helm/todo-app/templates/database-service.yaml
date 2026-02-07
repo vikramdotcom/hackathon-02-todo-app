@@ -1,0 +1,18 @@
+{{- if .Values.database.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "todo-app.database.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.database.service.type }}
+  ports:
+  - port: {{ .Values.database.service.port }}
+    targetPort: {{ .Values.database.service.targetPort }}
+    protocol: TCP
+    name: postgres
+  selector:
+    {{- include "todo-app.database.selectorLabels" . | nindent 4 }}
+{{- end }}
