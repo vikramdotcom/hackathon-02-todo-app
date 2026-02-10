@@ -3,7 +3,7 @@ import '../styles/globals.css'
 import FloatingChatButton from '@/components/layout/FloatingChatButton'
 
 export const metadata: Metadata = {
-  title: 'Todo App - Phase II',
+  title: 'Todo App Fullstack',
   description: 'Full-stack web application for todo management',
 }
 

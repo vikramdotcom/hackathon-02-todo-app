@@ -9,7 +9,7 @@ export default function Home() {
       <main className="flex flex-col items-center justify-center px-4 py-16">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            Todo App - Phase II
+            Todo App Fullstack
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
             Full-stack web application with authentication and database persistence
@@ -72,7 +72,7 @@ export default function Home() {
 
       <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-8 mt-16">
         <div className="max-w-7xl mx-auto px-4 text-center text-gray-600 dark:text-gray-300">
-          <p>Phase II - Full-Stack Web Application</p>
+          <p>Todo App Fullstack - Complete Solution</p>
           <p className="text-sm mt-2">Built with Next.js 14, FastAPI, and PostgreSQL</p>
         </div>
       </footer>
