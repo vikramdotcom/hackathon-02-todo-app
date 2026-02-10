@@ -159,7 +159,7 @@ SECRET_KEY=your-secret-key-here
 OPENAI_API_KEY=your-openai-api-key
 
 # Frontend Configuration
-NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_API_URL=http://localhost:8001
 NEXT_PUBLIC_APP_NAME="Todo App"
 
 # Database Configuration

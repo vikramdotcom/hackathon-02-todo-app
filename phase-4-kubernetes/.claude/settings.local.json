@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker-compose up:*)",
+      "Bash(docker-compose ps:*)",
+      "Bash(docker-compose logs:*)",
+      "Bash(cmd.exe /c \"cd /d C:\\\\GIAIC\\\\Q4-Hackathons\\\\hackathon-02-todo-app\\\\phase-4-kubernetes && scripts\\\\setup-minikube.bat\")",
+      "Bash(winget:*)",
+      "Bash(powershell:*)",
+      "Bash(\"C:\\\\Program Files\\\\Kubernetes\\\\Minikube\\\\minikube.exe\" version:*)",
+      "Bash(\"C:\\\\Program Files\\\\Kubernetes\\\\Minikube\\\\minikube.exe\" status:*)",
+      "Bash(\"C:\\\\Program Files\\\\Kubernetes\\\\Minikube\\\\minikube.exe\" start:*)",
+      "Bash(\"C:\\\\Program Files\\\\Kubernetes\\\\Minikube\\\\minikube.exe\" docker-env:*)",
+      "Bash(kubectl get:*)",
+      "Bash(helm install todo-app ./helm/todo-app -n todo-app)",
+      "Bash(kubectl apply:*)",
+      "Bash(kubectl wait:*)",
+      "Bash(kubectl logs:*)"
+    ]
+  }
+}

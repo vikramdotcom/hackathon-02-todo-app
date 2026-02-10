@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  output: 'standalone',
   eslint: {
     // Disable ESLint during builds for Vercel deployment
     ignoreDuringBuilds: true,

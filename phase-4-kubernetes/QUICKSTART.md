@@ -263,12 +263,12 @@ If Ingress is not working, use port forwarding:
 kubectl port-forward service/frontend 3000:3000 -n todo-app
 
 # Backend
-kubectl port-forward service/backend 8000:8000 -n todo-app
+kubectl port-forward service/backend 8001:8000 -n todo-app
 ```
 
 Then access:
 - Frontend: http://localhost:3000
-- Backend: http://localhost:8000
+- Backend: http://localhost:8001
 
 ### Restart Deployments
 

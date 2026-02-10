@@ -255,8 +255,8 @@ kubectl port-forward service/frontend 3000:3000 -n todo-app
 # Access: http://localhost:3000
 
 # Backend
-kubectl port-forward service/backend 8000:8000 -n todo-app
-# Access: http://localhost:8000
+kubectl port-forward service/backend 8001:8000 -n todo-app
+# Access: http://localhost:8001
 
 # Database (for debugging)
 kubectl port-forward service/database 5432:5432 -n todo-app
