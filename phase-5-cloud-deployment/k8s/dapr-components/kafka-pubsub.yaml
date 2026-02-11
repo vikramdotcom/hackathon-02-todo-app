@@ -1,0 +1,43 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: kafka-pubsub
+  namespace: todo-app
+spec:
+  type: pubsub.kafka
+  version: v1
+  metadata:
+  # Redpanda Cloud connection (Kafka-compatible)
+  - name: brokers
+    value: "${REDPANDA_BOOTSTRAP_SERVERS}"
+  - name: authType
+    value: "password"
+  - name: saslUsername
+    value: "${REDPANDA_SASL_USERNAME}"
+  - name: saslPassword
+    secretKeyRef:
+      name: redpanda-credentials
+      key: sasl-password
+  - name: saslMechanism
+    value: "SCRAM-SHA-256"
+  - name: securityProtocol
+    value: "SASL_SSL"
+  # Consumer configuration
+  - name: consumerGroup
+    value: "todo-app-consumers"
+  - name: clientId
+    value: "todo-app-client"
+  # Topic configuration
+  - name: maxMessageBytes
+    value: "1048576"  # 1MB
+  - name: consumeRetryInterval
+    value: "200ms"
+  # Performance tuning
+  - name: version
+    value: "2.8.0"
+scopes:
+- backend
+- recurring-task-service
+- notification-service
+- websocket-service
+- audit-service

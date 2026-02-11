@@ -1,0 +1,34 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: statestore
+  namespace: todo-app
+spec:
+  type: state.postgresql
+  version: v1
+  metadata:
+  # Neon PostgreSQL connection
+  - name: connectionString
+    secretKeyRef:
+      name: postgres-credentials
+      key: connection-string
+  # Table configuration
+  - name: tableName
+    value: "dapr_state"
+  - name: metadataTableName
+    value: "dapr_metadata"
+  # Performance tuning
+  - name: timeout
+    value: "20s"
+  - name: maxConns
+    value: "10"
+  - name: connectionMaxIdleTime
+    value: "5m"
+  # Transaction support
+  - name: actorStateStore
+    value: "true"
+scopes:
+- backend
+- recurring-task-service
+- notification-service
+- audit-service
