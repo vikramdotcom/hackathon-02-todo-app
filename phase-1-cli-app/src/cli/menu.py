@@ -16,6 +16,25 @@ class MenuDisplay:
     """
 
     @staticmethod
+    def display_banner():
+        """Display the TODO ASCII art banner."""
+        banner = """
+================================================================================
+
+  TTTTTTT   OOO   DDDD     OOO        AAA   PPPP   PPPP
+    TTT    O   O  D   D   O   O      A   A  P   P  P   P
+    TTT    O   O  D   D   O   O      AAAAA  PPPP   PPPP
+    TTT    O   O  D   D   O   O      A   A  P      P
+    TTT     OOO   DDDD     OOO       A   A  P      P
+
+                   Phase I - Command Line Interface
+                        Your Personal Task Manager
+
+================================================================================
+        """
+        print(banner)
+
+    @staticmethod
     def display_main_menu():
         """Display the main menu options."""
         print("\n=== Todo Application ===\n")
@@ -132,6 +151,9 @@ class MenuHandler:
 
     def run(self):
         """Main menu loop."""
+        # Display banner on startup
+        self.display.display_banner()
+
         while self.running:
             try:
                 self.display.display_main_menu()
