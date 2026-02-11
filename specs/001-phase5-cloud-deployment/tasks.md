@@ -60,14 +60,14 @@ Tasks marked with `[P]` can be executed in parallel with other `[P]` tasks in th
 
 ### Tasks
 
-- [ ] T001 Create phase-5-cloud-deployment folder structure per implementation plan
-- [ ] T002 Copy Phase IV Helm charts to phase-5-cloud-deployment/helm/todo-chatbot/
-- [ ] T003 Create backend service structure in phase-5-cloud-deployment/backend/
-- [ ] T004 Create microservices structure in phase-5-cloud-deployment/services/
-- [ ] T005 Create frontend structure in phase-5-cloud-deployment/frontend/
-- [ ] T006 Create k8s manifests structure in phase-5-cloud-deployment/k8s/
-- [ ] T007 Create scripts folder in phase-5-cloud-deployment/scripts/
-- [ ] T008 Update main README.md with Phase V section and architecture overview
+- [x] T001 Create phase-5-cloud-deployment folder structure per implementation plan
+- [x] T002 Copy Phase IV Helm charts to phase-5-cloud-deployment/helm/todo-chatbot/
+- [x] T003 Create backend service structure in phase-5-cloud-deployment/backend/
+- [x] T004 Create microservices structure in phase-5-cloud-deployment/services/
+- [x] T005 Create frontend structure in phase-5-cloud-deployment/frontend/
+- [x] T006 Create k8s manifests structure in phase-5-cloud-deployment/k8s/
+- [x] T007 Create scripts folder in phase-5-cloud-deployment/scripts/
+- [x] T008 Update main README.md with Phase V section and architecture overview
 
 ---
 

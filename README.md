@@ -18,7 +18,7 @@ This hackathon project demonstrates full-stack development capabilities by build
 | **[Phase II](./phase-2-web-app/)** | Full-Stack Web Application | Next.js, FastAPI, SQLModel, Neon DB | 150 | Dec 14, 2025 | ✅ Complete |
 | **[Phase III](./phase-3-ai-chatbot/)** | AI-Powered Todo Chatbot | OpenAI ChatKit, Agents SDK, MCP SDK | 200 | Dec 21, 2025 | ✅ Complete |
 | **[Phase IV](./phase-4-kubernetes/)** | Local Kubernetes Deployment | Docker, Minikube, Helm, kubectl-ai, kagent | 250 | Jan 4, 2026 | ✅ Complete |
-| **[Phase V](./phase-5-cloud-deployment/)** | Advanced Cloud Deployment | Kafka, Dapr, DigitalOcean DOKS | 300 | Jan 18, 2026 | ✅ Complete |
+| **[Phase V](./phase-5-cloud-deployment/)** | Advanced Cloud Deployment | Redpanda, Dapr, DigitalOcean DOKS | 300 | Jan 18, 2026 | 🚧 In Progress |
 
 ## Phase Details
 
